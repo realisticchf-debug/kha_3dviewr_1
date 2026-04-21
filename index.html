@@ -31,7 +31,6 @@
       overflow: hidden;
     }
 
-    /* background decoration */
     body::before {
       content: '';
       position: fixed;
@@ -55,9 +54,7 @@
       gap: 20px;
     }
 
-    header {
-      text-align: center;
-    }
+    header { text-align: center; }
 
     .badge {
       display: inline-block;
@@ -79,10 +76,7 @@
       color: var(--text);
     }
 
-    h1 span {
-      color: var(--accent);
-      font-weight: 700;
-    }
+    h1 span { color: var(--accent); font-weight: 700; }
 
     .viewer-wrap {
       width: 100%;
@@ -103,10 +97,7 @@
       --progress-bar-height: 3px;
     }
 
-    /* AR button styling */
-    model-viewer::part(default-ar-button) {
-      display: none; /* hide default, use custom below */
-    }
+    model-viewer::part(default-ar-button) { display: none; }
 
     .btn-ar {
       display: flex;
@@ -132,11 +123,7 @@
       box-shadow: 0 8px 32px rgba(192,57,43,0.5);
     }
 
-    .btn-ar svg {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-    }
+    .btn-ar svg { width: 20px; height: 20px; flex-shrink: 0; }
 
     .hint {
       font-size: 12px;
@@ -145,11 +132,8 @@
       line-height: 1.6;
     }
 
-    .hint strong {
-      color: var(--accent);
-    }
+    .hint strong { color: var(--accent); }
 
-    /* loading overlay */
     .loading-msg {
       position: absolute;
       inset: 0;
@@ -173,8 +157,6 @@
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    model-viewer[data-js-focus-visible] .loading-msg { display: none; }
   </style>
 </head>
 <body>
@@ -195,11 +177,11 @@
         alt="Cheonlock 3D Character"
         auto-rotate
         camera-controls
-        animation-crossfade-duration="0"
         autoplay
         ar
         ar-modes="webxr scene-viewer quick-look"
         ar-scale="fixed"
+        ar-placement="floor"
         shadow-intensity="1.2"
         environment-image="neutral"
         exposure="1"
@@ -231,7 +213,6 @@
 
     viewer.addEventListener('load', () => {
       loadingMsg.style.display = 'none';
-      // autoplay all animations
       if (viewer.availableAnimations && viewer.availableAnimations.length > 0) {
         viewer.animationName = viewer.availableAnimations[0];
         viewer.play({ repetitions: Infinity });
