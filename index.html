@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Viewer</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --accent: #e8b84b;
+      --accent2: #c0392b;
+      --text: #f0ece0;
+      --muted: #6b6660;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* background decoration */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(200,80,40,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 80% 80%, rgba(232,184,75,0.10) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 600px;
+      padding: 24px 16px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(232,184,75,0.4);
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: clamp(18px, 5vw, 26px);
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+
+    h1 span {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .viewer-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(232,184,75,0.15);
+      background: var(--surface);
+      box-shadow: 0 0 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+      position: relative;
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      --progress-bar-color: var(--accent);
+      --progress-bar-height: 3px;
+    }
+
+    /* AR button styling */
+    model-viewer::part(default-ar-button) {
+      display: none; /* hide default, use custom below */
+    }
+
+    .btn-ar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--accent2), #e67e22);
+      color: #fff;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 4px 24px rgba(192,57,43,0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+      text-decoration: none;
+    }
+
+    .btn-ar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(192,57,43,0.5);
+    }
+
+    .btn-ar svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .hint strong {
+      color: var(--accent);
+    }
+
+    /* loading overlay */
+    .loading-msg {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(232,184,75,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    model-viewer[data-js-focus-visible] .loading-msg { display: none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="badge">3D Character Viewer</div>
+      <h1>천록 <span>Cheonlock</span></h1>
+    </header>
+
+    <div class="viewer-wrap">
+      <div class="loading-msg" id="loadingMsg">
+        <div class="spinner"></div>
+        <span>모델 불러오는 중...</span>
+      </div>
+      <model-viewer
+        id="viewer"
+        src="Cheonlock_Yellow_Ani.glb"
+        alt="Cheonlock 3D Character"
+        auto-rotate
+        camera-controls
+        animation-crossfade-duration="0"
+        autoplay
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        ar-scale="fixed"
+        shadow-intensity="1.2"
+        environment-image="neutral"
+        exposure="1"
+        style="background: transparent;"
+      ></model-viewer>
+    </div>
+
+    <a class="btn-ar" href="#" id="arBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+        <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+        <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+        <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+        <rect x="7" y="7" width="10" height="10" rx="1"/>
+      </svg>
+      AR로 실제 공간에서 보기
+    </a>
+
+    <p class="hint">
+      📱 <strong>모바일</strong>에서 접속 시 AR 버튼으로 실제 공간에 캐릭터를 띄울 수 있어요.<br>
+      🖥️ PC에서는 마우스로 360° 회전 가능합니다.
+    </p>
+  </div>
+
+  <script>
+    const viewer = document.getElementById('viewer');
+    const arBtn = document.getElementById('arBtn');
+    const loadingMsg = document.getElementById('loadingMsg');
+
+    viewer.addEventListener('load', () => {
+      loadingMsg.style.display = 'none';
+      // autoplay all animations
+      if (viewer.availableAnimations && viewer.availableAnimations.length > 0) {
+        viewer.animationName = viewer.availableAnimations[0];
+        viewer.play({ repetitions: Infinity });
+      }
+    });
+
+    arBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (viewer.canActivateAR) {
+        viewer.activateAR();
+      } else {
+        alert('이 기기 또는 브라우저에서는 AR이 지원되지 않습니다.\n📱 iOS: Safari / Android: Chrome 으로 접속해주세요.');
+      }
+    });
+  </script>
+</body>
+</html>
